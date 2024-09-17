@@ -1,16 +1,25 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query, UseGuards, Request } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AppService } from "src/app.service";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { ConversionService } from "./conversion.service";
 
 @ApiTags('conversion')
 @Controller('conversion')
 export class ConversionController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly conversionService: ConversionService
+  ) {}
 
+  @Get('convert')
   @UseGuards(JwtAuthGuard)
-  @Get('teste')
-  getHello(): string {
-    return this.appService.getHello();
+  async convert(
+    @Query('fromCoin') fromCoin: string,
+    @Query('toCoin') toCoin: string,
+    @Query('amount') amount: number,
+    @Request() req
+  ){
+    const userId = req.user.id;
+    return this.conversionService.convertCurrency(userId, fromCoin, toCoin, amount);
   }
 }

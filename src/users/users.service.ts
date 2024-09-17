@@ -77,4 +77,16 @@ export class UsersService {
       where: {login}
     });
   }
+
+  async getUserIdByLogin(login: string): Promise<number>{
+    const user = await this.prisma.user.findFirst({
+      where: {login}
+    });
+
+    if(!user){
+      throw new HttpException("User_not_found", HttpStatus.NOT_FOUND);
+    }
+
+    return user.id;
+  }
 }
